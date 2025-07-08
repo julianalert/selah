@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
-import { Navbar } from '../components/Navbar'
+import { Navbar, Footer } from '../components/Navbar'
+import { Inter } from 'next/font/google';
 import Head from 'next/head';
 import "./globals.css";
 
 
+const inter = Inter({ subsets: ['latin'] }); // ✅ already correct
 
 export const metadata: Metadata = {
   title: "Watch AI Movies",
@@ -25,9 +27,10 @@ export default function RootLayout({
           async
         ></script>
       </Head>
-      <body className="bg-white text-black">
+      <body className={inter.className}>
         <Navbar />
         <div className="pt-20">{children}</div>
+        <Footer />
       </body>
     </html>
   );
