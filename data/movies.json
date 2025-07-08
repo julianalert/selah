@@ -1,0 +1,81 @@
+[
+    {
+      "id": 1,
+      "title": "The Lonely Little Flame",
+      "slug": "the-lonely-little-flame",
+      "description": "A short film generated with Runway Gen-4.",
+      "thumbnail": "/thumbnails/the-lonely-little-flame.jpg",
+      "videoUrl": "https://www.youtube.com/embed/c8IBmK7GZP8",
+      "genre": ["Sci-Fi", "Experimental"],
+      "creator": "Dion Lee",
+      "year": 2025
+    },
+    {
+      "id": 2,
+      "title": "The Herd",
+      "slug": "the-herd",
+      "description": "A short film generated with Runway Gen-4.",
+      "thumbnail": "/thumbnails/the-herd.jpg",
+      "videoUrl": "https://www.youtube.com/embed/Z0P6qjMUl34",
+      "genre": ["Adventure"],
+      "creator": "Jiri Kilevnik",
+      "year": 2025
+    },
+    {
+        "id": 3,
+        "title": "I Want to Go Home, Please",
+        "slug": "i-want-to-go-home-please",
+        "description": "The story of an old toy which want to go home.",
+        "thumbnail": "/thumbnails/i-want-to-go-home-please.jpg",
+        "videoUrl": "https://www.youtube.com/embed/f46oaRYfbaA",
+        "genre": ["Sentimental"],
+        "creator": "Evan Siegal",
+        "year": 2024
+      },
+      {
+        "id": 4,
+        "title": "HOME",
+        "slug": "home",
+        "description": "Gen:48 Grand Prix Winner.",
+        "thumbnail": "/thumbnails/home.jpg",
+        "videoUrl": "https://www.youtube.com/embed/NphCYRXjqTI",
+        "genre": ["Experimental"],
+        "creator": "Ezra Li",
+        "year": 2025
+      },
+      {
+        "id": 5,
+        "title": "The King's Secret",
+        "slug": "the-kings-secret",
+        "description": "Gen:48 People Choice.",
+        "thumbnail": "/thumbnails/the-kings-secret.jpg",
+        "videoUrl": "https://www.youtube.com/embed/L2DQwCp_DCw",
+        "genre": ["Experimental"],
+        "creator": "Osvaldo Rivera Vazquez",
+        "year": 2025
+      },
+      {
+        "id": 6,
+        "title": "RŌHKI - INTERSECTION (E1)",
+        "slug": "rohki-intersection-e1",
+        "description": "RŌHKI is a story about the fusion of past, present and future.",
+        "thumbnail": "/thumbnails/rohki-intersection-e1.jpg",
+        "videoUrl": "https://www.youtube.com/embed/QLV0sKfxk9s",
+        "genre": ["Sci-Fi", "Animation"],
+        "creator": "Paul Jenkins and RŌHKI",
+        "year": 2024
+      },
+      {
+        "id": 7,
+        "title": "RŌHKI - A Million Trillion Pathways (E2)",
+        "slug": "rohki-a-million-trillion-pathways-e2",
+        "description": "RŌHKI is a story about the fusion of past, present and future.",
+        "thumbnail": "/thumbnails/rohki-a-million-trillion-pathways-e2.jpg",
+        "videoUrl": "https://www.youtube.com/embed/3p8F-Iyu9j8",
+        "genre": ["Sci-Fi", "Animation"],
+        "creator": "Paul Jenkins and RŌHKI",
+        "year": 2025
+      }
+
+  ]
+  
