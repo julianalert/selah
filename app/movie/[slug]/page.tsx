@@ -1,5 +1,11 @@
 import { ClientMoviePage } from './ClientMoviePage';
 
-export default function MoviePage({ params }: { params: { slug: string } }) {
+type LocalProps = {
+  params: {
+    slug: string;
+  };
+};
+
+export default function MoviePage({ params }: LocalProps) {
   return <ClientMoviePage slug={params.slug} />;
 }

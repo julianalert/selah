@@ -1,5 +1,11 @@
 import { ClientGenrePage } from './ClientGenrePage';
 
-export default function GenrePage({ params }: { params: { slug: string } }) {
+type LocalProps = {
+  params: {
+    slug: string;
+  };
+};
+
+export default function GenrePage({ params }: LocalProps) {
   return <ClientGenrePage slug={params.slug} />;
 }
