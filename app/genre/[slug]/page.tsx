@@ -1,6 +1,6 @@
 import { ClientGenrePage } from './ClientGenrePage';
 
-// No TypeScript type — keep it raw, it just works
-export default function GenrePage({ params }: { params: { slug: string } }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function GenrePage({ params }: { params: any }) {
   return <ClientGenrePage slug={params.slug} />;
 }
