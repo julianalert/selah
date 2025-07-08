@@ -1,5 +1,11 @@
 import { ClientMoviePage } from './ClientMoviePage';
 
-export default function MoviePage(props: Record<string, any>) {
-  return <ClientMoviePage slug={props.params.slug} />;
+type MoviePageProps = {
+  params: {
+    slug: string;
+  };
+};
+
+export default function MoviePage({ params }: MoviePageProps) {
+  return <ClientMoviePage slug={params.slug} />;
 }

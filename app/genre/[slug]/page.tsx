@@ -1,5 +1,11 @@
 import { ClientGenrePage } from './ClientGenrePage';
 
-export default function GenrePage(props: Record<string, any>) {
-  return <ClientGenrePage slug={props.params.slug} />;
+type GenrePageProps = {
+  params: {
+    slug: string;
+  };
+};
+
+export default function GenrePage({ params }: GenrePageProps) {
+  return <ClientGenrePage slug={params.slug} />;
 }
