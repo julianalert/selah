@@ -9,9 +9,10 @@ export default function HomePage() {
   return (
     <main className="p-6 pt-12">
   <div className="text-center mb-8">
-    <h1 className="text-4xl font-bold mb-4">The Best AI Films, Curated for You</h1>
+    <h1 className="text-4xl font-bold mb-4">Watch AI Movies</h1>
     <p className="text-gray-600 text-base max-w-xl mx-auto mb-6">
-    Discover the most creative short films made entirely with AI. Curated, categorized, and updated regularly.
+    Discover short films made with artificial intelligence. 
+    Bold, surreal, beautiful.
   </p>
 
     <div className="flex justify-center flex-wrap gap-2">
