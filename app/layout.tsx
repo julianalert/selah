@@ -16,6 +16,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <Head>
+        {/* ✅ Beam Analytics script */}
+        <script
+          src="https://beamanalytics.b-cdn.net/beam.min.js"
+          data-token="7f2b903a-306b-4fa5-88f6-4562a121af28"
+          async
+        ></script>
+      </Head>
       <body className="bg-white text-black">
         <Navbar />
         <div className="pt-20">{children}</div>
