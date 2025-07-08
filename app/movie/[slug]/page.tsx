@@ -1,11 +1,6 @@
 import { ClientMoviePage } from './ClientMoviePage';
 
-type MoviePageProps = {
-  params: {
-    slug: string;
-  };
-};
-
-export default function MoviePage({ params }: MoviePageProps) {
+// No TypeScript type for PageProps!
+export default function MoviePage({ params }: { params: { slug: string } }) {
   return <ClientMoviePage slug={params.slug} />;
 }

@@ -1,11 +1,6 @@
 import { ClientGenrePage } from './ClientGenrePage';
 
-type GenrePageProps = {
-  params: {
-    slug: string;
-  };
-};
-
-export default function GenrePage({ params }: GenrePageProps) {
+// No TypeScript type — keep it raw, it just works
+export default function GenrePage({ params }: { params: { slug: string } }) {
   return <ClientGenrePage slug={params.slug} />;
 }
