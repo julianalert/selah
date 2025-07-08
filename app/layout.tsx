@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Navbar, Footer } from '../components/Navbar'
 import { Inter } from 'next/font/google';
-import Head from 'next/head';
 import "./globals.css";
 
 
@@ -19,14 +18,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Head>
+      <head>
         {/* ✅ Beam Analytics script */}
         <script
           src="https://beamanalytics.b-cdn.net/beam.min.js"
           data-token="7f2b903a-306b-4fa5-88f6-4562a121af28"
           async
         ></script>
-      </Head>
+      </head>
       <body className={inter.className}>
         <Navbar />
         <div className="pt-20">{children}</div>

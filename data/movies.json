@@ -75,6 +75,61 @@
         "genre": ["Sci-Fi", "Animation"],
         "creator": "Paul Jenkins and RŌHKI",
         "year": 2025
+      },
+      {
+        "id": 8,
+        "title": "Wizard Intervention",
+        "slug": "wizard-intervention",
+        "description": "An introverted Wizard rails against an intervention to get him to do the one thing he fears most – go outside. The Hero's Journey will never be the same.",
+        "thumbnail": "/thumbnails/wizard-intervention.jpg",
+        "videoUrl": "https://www.youtube.com/embed/jBwluRXtS2U",
+        "genre": ["Comedy", "Animation"],
+        "creator": "BotsInTheHall",
+        "year": 2025
+      },
+      {
+        "id": 9,
+        "title": "NEVER buy an 80's house",
+        "slug": "never-buy-an-80s-house",
+        "description": "A devastated Gen X homeowner finds out his house is built on the worst foundation possible - Rock and Roll.",
+        "thumbnail": "/thumbnails/never-buy-an-80s-house.jpg",
+        "videoUrl": "https://www.youtube.com/embed/KnNYsvDCaUg",
+        "genre": ["Comedy", "Animation"],
+        "creator": "BotsInTheHall",
+        "year": 2025
+      },
+      {
+        "id": 10,
+        "title": "Paywall Sphinx",
+        "slug": "paywall-sphinx",
+        "description": "A mythological Sphinx, with some way-to-hard to answer riddles, bothers a guy on his way to work.",
+        "thumbnail": "/thumbnails/paywall-sphinx.jpg",
+        "videoUrl": "https://www.youtube.com/embed/FAQWRBCt_5E",
+        "genre": ["Comedy", "Animation"],
+        "creator": "BotsInTheHall",
+        "year": 2025
+      },
+      {
+        "id": 11,
+        "title": "JESUS & THE TIME MACHINE",
+        "slug": "jesus-time-machine",
+        "description": "Jesus learns from a time-traveling idiot that things have really gone off the rails.",
+        "thumbnail": "/thumbnails/jesus-time-machine.jpg",
+        "videoUrl": "https://www.youtube.com/embed/l4VDfBvndnY",
+        "genre": ["Comedy", "Animation"],
+        "creator": "BotsInTheHall",
+        "year": 2025
+      },
+      {
+        "id": 12,
+        "title": "A Perfect Day: Unit 655",
+        "slug": "a-perfect-day-unit-655",
+        "description": "A tribute to Portal, or rip off? Eh, you decide.",
+        "thumbnail": "/thumbnails/a-perfect-day-unit-655.jpg",
+        "videoUrl": "https://www.youtube.com/embed/Vng0Y1Shvyg",
+        "genre": ["Sci-Fi"],
+        "creator": "GrimYachtPictures",
+        "year": 2025
       }
 
   ]
