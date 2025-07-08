@@ -1,5 +1,4 @@
 'use client';
-import { useState } from 'react';
 import movies from '../data/movies.json';
 const genres = Array.from(
   new Set(movies.flatMap((m) => m.genre.map((g) => g.toLowerCase())))
