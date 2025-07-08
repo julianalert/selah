@@ -6,7 +6,6 @@ const genres = Array.from(
 );
 
 export default function HomePage() {
-  const [selectedMovie, setSelectedMovie] = useState<null | typeof movies[0]>(null);
 
   return (
     <main className="p-6 pt-12">
