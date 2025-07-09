@@ -24,7 +24,7 @@ export function ClientMoviePage({ slug }: { slug: string }) {
       </div>
       <p className="text-gray-700 mb-2">{movie.description}</p>
       <p className="text-sm text-gray-500">
-        Created by <strong>{movie.creator}</strong> • {movie.year} •{' '}
+        Created by <Link href={`/author/${movie.creator.toLowerCase().replace(/\s+/g, '-')}`} className="underline hover:text-orange-400 transition-colors"><strong>{movie.creator}</strong></Link> • {movie.year} •{' '}
         {movie.genre.join(', ')}
       </p>
 
