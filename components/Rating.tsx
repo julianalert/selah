@@ -8,6 +8,8 @@ type RatingProps = {
   movieSlug: string;
 };
 
+type RatingRow = { rating: number };
+
 export default function Rating({ movieSlug }: RatingProps) {
   const [average, setAverage] = useState<number | null>(null);
   const [userRating, setUserRating] = useState<number | null>(null);
@@ -25,7 +27,7 @@ export default function Rating({ movieSlug }: RatingProps) {
         .eq('movie_slug', movieSlug);
 
       if (avgData) {
-        const ratings = avgData.map((r: any) => r.rating);
+        const ratings = avgData.map((r: RatingRow) => r.rating);
         const avg =
           ratings.length > 0
             ? ratings.reduce((a: number, b: number) => a + b, 0) / ratings.length
@@ -71,7 +73,7 @@ export default function Rating({ movieSlug }: RatingProps) {
         .select('rating')
         .eq('movie_slug', movieSlug);
       if (avgData) {
-        const ratings = avgData.map((r: any) => r.rating);
+        const ratings = avgData.map((r: RatingRow) => r.rating);
         const avg =
           ratings.length > 0
             ? ratings.reduce((a: number, b: number) => a + b, 0) / ratings.length
