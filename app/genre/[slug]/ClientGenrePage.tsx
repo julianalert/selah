@@ -1,3 +1,5 @@
+'use client';
+
 import { useMemo } from 'react';
 import { notFound } from 'next/navigation';
 import movies from '../../../data/movies.json';
