@@ -1,5 +1,3 @@
-'use client';
-
 import movies from '../../../data/movies.json';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
