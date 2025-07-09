@@ -1,7 +1,8 @@
 import movies from '../../../data/movies.json';
 import { notFound } from 'next/navigation';
 
-export default function AuthorPage({ params }: { params: any }) {
+type AuthorPageProps = { params: { slug: string } };
+export default function AuthorPage({ params }: AuthorPageProps) {
   const authorSlug = decodeURIComponent(params.slug).toLowerCase();
   const authorMovies = movies.filter(
     (movie) => movie.creator.toLowerCase().replace(/\s+/g, '-') === authorSlug
