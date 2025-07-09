@@ -130,6 +130,39 @@
         "genre": ["Sci-Fi"],
         "creator": "GrimYachtPictures",
         "year": 2025
+      },
+      {
+        "id": 13,
+        "title": "Graveyard",
+        "slug": "graveyard",
+        "description": "A gifted mind-walker dives into the decaying subconscious of a dying serial killer to locate a missing child. But what awaits is not just memory—it’s a collapsing nightmare. A graveyard of illusions, victims, and something that refuses to die. He must find the boy… before the mind devours him too.",
+        "thumbnail": "/thumbnails/graveyard.jpg",
+        "videoUrl": "https://www.youtube.com/embed/FYxuj3mhRQc",
+        "genre": ["Sci-Fi", "Animation"],
+        "creator": "Danny Tseng",
+        "year": 2025
+      },
+      {
+        "id": 14,
+        "title": "LATE",
+        "slug": "late",
+        "description": "A short film about the fleeting presence of beauty and a reminder not to lose oneself in toil.",
+        "thumbnail": "/thumbnails/late.jpg",
+        "videoUrl": "https://www.youtube.com/embed/LoahOtY6R30",
+        "genre": ["Sci-Fi", "Animation"],
+        "creator": "Hal Watmough",
+        "year": 2025
+      },
+      {
+        "id": 15,
+        "title": "The Frost",
+        "slug": "the-frost",
+        "description": "In a frozen, post-apocalyptic world, a group of survivors follows a mysterious signal up a treacherous mountain in Antarctica. Their perilous journey tests their limits and forces them to confront disturbing truths about their past and humanity's uncertain future.",
+        "thumbnail": "/thumbnails/the-frost.jpg",
+        "videoUrl": "https://www.youtube.com/embed/DNyxZi9Gp_4",
+        "genre": ["Sci-Fi"],
+        "creator": "Josh Rubin",
+        "year": 2025
       }
 
   ]

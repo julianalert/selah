@@ -13,17 +13,7 @@ export function ClientMoviePage({ slug }: { slug: string }) {
   return (
     <main className="p-6 max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold mb-2">{movie.title}</h1>
-      <div className="flex flex-wrap gap-2 mb-4">
-        {movie.genre.map((g) => (
-          <span
-            key={g}
-            className="inline-block px-3 py-1 rounded-full text-xs font-semibold"
-            style={{ backgroundColor: '#374151', color: 'white' }}
-          >
-            {g}
-          </span>
-        ))}
-      </div>
+      
       <div className="aspect-video mb-4">
         <iframe
           src={movie.videoUrl}

@@ -9,6 +9,25 @@ const inter = Inter({ subsets: ['latin'] }); // ✅ already correct
 export const metadata: Metadata = {
   title: "Watch AI Movies",
   description: "A curated collection of AI-generated short films.",
+  openGraph: {
+    title: "Watch AI Movies",
+    description: "A curated collection of AI-generated short films.",
+    images: [
+      {
+        url: "/thumbnail.png",
+        width: 1200,
+        height: 630,
+        alt: "Watch AI Movies - AI-generated short films thumbnail"
+      }
+    ],
+    type: "website"
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Watch AI Movies",
+    description: "A curated collection of AI-generated short films.",
+    images: ["/thumbnail.jpg"]
+  }
 };
 
 export default function RootLayout({
