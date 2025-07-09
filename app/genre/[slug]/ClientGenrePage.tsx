@@ -49,6 +49,11 @@ export function ClientGenrePage({ slug }: { slug: string }) {
                   <path d="M8 5v14l11-7z" />
                 </svg>
               </div>
+              <div className="absolute bottom-2 right-2 z-10">
+                <span className="bg-white/90 text-black text-xs font-semibold px-2 py-0.5 rounded-full shadow">
+                  {capitalizedGenre}
+                </span>
+              </div>
             </div>
             <h2 className="mt-2 text-lg font-medium text-center">{movie.title}</h2>
           </a>

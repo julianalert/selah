@@ -11,7 +11,7 @@ export default function HomePage() {
   <div className="text-center mb-8">
     <h1 className="text-4xl font-bold mb-4">Watch AI Movies</h1>
     <p className="text-gray-600 text-base max-w-xl mx-auto mb-6">
-    Discover short films made with artificial intelligence. 
+    Discover short films made with artificial intelligence. <br />
     Bold, surreal, beautiful.
   </p>
 
@@ -35,6 +35,17 @@ export default function HomePage() {
           className="group block cursor-pointer relative"
         >
           <div className="relative overflow-hidden rounded-lg">
+            {/* Genre Badges */}
+            <div className="absolute bottom-2 right-2 flex flex-wrap gap-1 z-10">
+              {movie.genre.map((g) => (
+                <span
+                  key={g}
+                  className="bg-white/90 text-black text-xs font-semibold px-2 py-0.5 rounded-full shadow"
+                >
+                  {g}
+                </span>
+              ))}
+            </div>
             <img
               src={movie.thumbnail}
               alt={movie.title}
