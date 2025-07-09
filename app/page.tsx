@@ -20,7 +20,8 @@ export default function HomePage() {
         <a
           key={genre}
           href={`/genre/${encodeURIComponent(genre)}`}
-          className="px-3 py-1 rounded-full text-sm bg-black hover:bg-black hover:text-white transition-colors"
+          className="px-3 py-1 rounded-full text-sm"
+          style={{ backgroundColor: '#374151', color: 'white' }}
         >
           {genre}
         </a>

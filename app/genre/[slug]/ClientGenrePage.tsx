@@ -55,7 +55,7 @@ export function ClientGenrePage({ slug }: { slug: string }) {
                 </span>
               </div>
             </div>
-            <h2 className="mt-2 text-lg font-medium text-center">{movie.title}</h2>
+            <h2 className="mt-2 text-lg font-medium text-left">{movie.title}</h2>
           </a>
         ))}
       </div>
