@@ -1,18 +1,19 @@
 'use client';
 import movies from '../data/movies.json';
+import { Movie } from '../types/Movie';
 import { MovieThumbnail } from '../components/MovieThumbnail';
 
 const genres = Array.from(
-  new Set(movies.flatMap((m) => m.genre.map((g) => g.toLowerCase())))
+  new Set((movies as Movie[]).flatMap((m) => m.genre.map((g) => g.toLowerCase())))
 );
 
-function getRandomMovies(movies: any[], count: number) {
+function getRandomMovies(movies: Movie[], count: number): Movie[] {
   const shuffled = [...movies].sort(() => 0.5 - Math.random());
   return shuffled.slice(0, count);
 }
 
 export default function HomePage() {
-  const featured = getRandomMovies(movies, 4);
+  const featured = getRandomMovies(movies as Movie[], 4);
 
   return (
     <main className="p-6 pt-12">
@@ -49,7 +50,7 @@ export default function HomePage() {
       {/* Genre Rows */}
       <div className="space-y-10">
         {genres.map((genre) => {
-          const genreMovies = movies.filter((m) =>
+          const genreMovies = (movies as Movie[]).filter((m) =>
             m.genre.map((g) => g.toLowerCase()).includes(genre)
           );
           if (genreMovies.length === 0) return null;

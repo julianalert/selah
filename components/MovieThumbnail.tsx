@@ -1,12 +1,5 @@
 import React from 'react';
-
-interface Movie {
-  id: number;
-  title: string;
-  slug: string;
-  thumbnail: string;
-  genre: string[];
-}
+import type { Movie } from '../types/Movie';
 
 export function MovieThumbnail({ movie }: { movie: Movie }) {
   return (
