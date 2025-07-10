@@ -22,7 +22,7 @@ export const Footer = () => (
   <footer className="w-full bg-[#0a0a0a] text-gray-600 text-center py-4 mt-8">
     Made with <span role="img" aria-label="orange heart">🧡</span> by{' '}
     <a
-      href="https://x.com/juliendvr"
+      href="https://x.com/thevincenttttt"
       target="_blank"
       rel="noopener noreferrer"
       className="underline hover:text-orange-400 transition-colors"
