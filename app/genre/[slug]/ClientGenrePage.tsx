@@ -4,19 +4,31 @@ import { useMemo } from 'react';
 import { notFound } from 'next/navigation';
 import movies from '../../../data/movies.json';
 
+function genreToSlug(genre: string) {
+  return genre.toLowerCase().replace(/[\s/]+/g, '-');
+}
+
 export function ClientGenrePage({ slug }: { slug: string }) {
   const genreSlug = decodeURIComponent(slug).toLowerCase();
 
+  // Find the original genre name that matches the slug
+  const originalGenre = useMemo(() => {
+    const allGenres = Array.from(
+      new Set(movies.flatMap((m) => m.genre))
+    );
+    return allGenres.find((g) => genreToSlug(g) === genreSlug) || genreSlug;
+  }, [genreSlug]);
+
   const filtered = useMemo(() => {
     return movies.filter((movie) =>
-      movie.genre.map((g) => g.toLowerCase()).includes(genreSlug)
+      movie.genre.map((g) => genreToSlug(g)).includes(genreSlug)
     );
   }, [genreSlug]);
 
   if (filtered.length === 0) return notFound();
 
   const capitalizedGenre =
-    genreSlug.charAt(0).toUpperCase() + genreSlug.slice(1);
+    originalGenre.charAt(0).toUpperCase() + originalGenre.slice(1);
 
   return (
     <main className="p-6 pt-12">

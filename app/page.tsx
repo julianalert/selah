@@ -13,6 +13,10 @@ function getRandomMovies(movies: Movie[], count: number): Movie[] {
   return shuffled.slice(0, count);
 }
 
+function genreToSlug(genre: string) {
+  return genre.toLowerCase().replace(/[\s/]+/g, '-');
+}
+
 export default function HomePage() {
   const featured = getRandomMovies(movies as Movie[], 4);
 
@@ -28,7 +32,7 @@ export default function HomePage() {
           {genres.map((genre) => (
             <a
               key={genre}
-              href={`/genre/${encodeURIComponent(genre)}`}
+              href={`/genre/${genreToSlug(genre)}`}
               className="px-3 py-1 rounded-full text-sm"
               style={{ backgroundColor: '#374151', color: 'white' }}
             >

@@ -17,7 +17,7 @@
       "description": "A short film generated with Runway Gen-4.",
       "thumbnail": "/thumbnails/the-herd.jpg",
       "videoUrl": "https://www.youtube.com/embed/Z0P6qjMUl34",
-      "genre": ["Sci-Fi"],
+      "genre": ["Action/Adventure"],
       "creator": "Jiri Kilevnik",
       "year": 2025
     },
@@ -250,6 +250,17 @@
         "videoUrl": "https://www.youtube.com/embed/MhN_5_BiqIw",
         "genre": ["Horror", "Experimental"],
         "creator": "Tim Evans",
+        "year": 2025
+      },
+      {
+        "id": 23,
+        "title": "Glider Man",
+        "slug": "glider-man",
+        "description": "After being left for dead in the Hudson River, a Brooklyn inventor discovers the water's magical healing abilities grant him a unique power: he resurrects stronger every time, embarking on a vengeful crusade to avenge his city.",
+        "thumbnail": "/thumbnails/glider-man.jpg",
+        "videoUrl": "https://www.youtube.com/embed/6-kXTsC-8e0",
+        "genre": ["Action/Adventure"],
+        "creator": "Dave Clark",
         "year": 2025
       }
 
