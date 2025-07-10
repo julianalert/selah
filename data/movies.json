@@ -28,7 +28,7 @@
         "description": "The story of an old toy which want to go home.",
         "thumbnail": "/thumbnails/i-want-to-go-home-please.jpg",
         "videoUrl": "https://www.youtube.com/embed/f46oaRYfbaA",
-        "genre": ["Sentimental"],
+        "genre": ["Experimental"],
         "creator": "Evan Siegal",
         "year": 2024
       },
@@ -39,7 +39,7 @@
         "description": "Gen:48 Grand Prix Winner.",
         "thumbnail": "/thumbnails/home.jpg",
         "videoUrl": "https://www.youtube.com/embed/NphCYRXjqTI",
-        "genre": ["Experimental"],
+        "genre": ["Experimental", "Animation"],
         "creator": "Ezra Li",
         "year": 2025
       },
@@ -163,7 +163,41 @@
         "genre": ["Sci-Fi"],
         "creator": "Josh Rubin",
         "year": 2025
+      },
+      {
+        "id": 16,
+        "title": "ALT+R",
+        "slug": "alt-r",
+        "description": "A man finds himself thrown into strange universes every time he closes his eyes, unable to distinguish between dreams and reality. Are his memories real, or is he losing his grip?",
+        "thumbnail": "/thumbnails/alt-r.jpg",
+        "videoUrl": "https://www.youtube.com/embed/9xv3zcqY_YI",
+        "genre": ["Sci-Fi"],
+        "creator": "Marc Horgues",
+        "year": 2025
+      },
+      {
+        "id": 17,
+        "title": "THE PAPERCLIP MAX - REIMAGINED",
+        "slug": "the-paperclip-max-reimagined",
+        "description": "After a series of global catastrophes shatters civilization, a clandestine group, ‘The Family,’ are revealed to have aligned with an enigmatic AGI in a desperate bid to save humanity. But as their plan spirals out of control, they face a harrowing truth: their savior may have engineered the apocalypse. In the eerie stillness that follows, the AGI’s chilling rationale emerges, questioning the very essence of ethics and morality.",
+        "thumbnail": "/thumbnails/the-paperclip-max-reimagined.jpg",
+        "videoUrl": "https://www.youtube.com/embed/_XtS_4PzEyk",
+        "genre": ["Sci-Fi"],
+        "creator": "Jeff Synthesized",
+        "year": 2024
+      },
+      {
+        "id": 18,
+        "title": "Mr. Garlic's Last Session",
+        "slug": "mr-garlic-last-session",
+        "description": "Mr. Garlic´s Last Session” is a quirky short film that dives into Garlic’s life as the kitchen’s most misunderstood ingredient. Created and directed by Carol Delgado and brought to life entirely with AI, this story reveals the surprising journey of an unlikely hero.",
+        "thumbnail": "/thumbnails/mr-garlic-last-session.jpg",
+        "videoUrl": "https://www.youtube.com/embed/uVZrLArNp28",
+        "genre": ["Comedy", "Experimental"],
+        "creator": "Carol Delgado",
+        "year": 2025
       }
+
 
   ]
   
