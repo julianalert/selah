@@ -27,7 +27,7 @@ export const Footer = () => (
       rel="noopener noreferrer"
       className="underline hover:text-orange-400 transition-colors"
     >
-      JulienD
+      Vincent Valentine
     </a>
   </footer>
 );
