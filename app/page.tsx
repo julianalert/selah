@@ -43,7 +43,7 @@ export default function HomePage() {
         <h2 className="text-2xl font-semibold mb-3">Featured AI Movies</h2>
         <div className="flex gap-4 overflow-x-auto pb-2">
           {featured.map((movie) => (
-            <MovieThumbnail key={movie.id} movie={movie} />
+            <MovieThumbnail key={movie.id} movie={movie} large />
           ))}
         </div>
       </section>
