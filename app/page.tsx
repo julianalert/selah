@@ -1,77 +1,77 @@
 'use client';
 import movies from '../data/movies.json';
+import { MovieThumbnail } from '../components/MovieThumbnail';
+
 const genres = Array.from(
   new Set(movies.flatMap((m) => m.genre.map((g) => g.toLowerCase())))
 );
 
+function getRandomMovies(movies: any[], count: number) {
+  const shuffled = [...movies].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+}
+
 export default function HomePage() {
+  const featured = getRandomMovies(movies, 4);
 
   return (
     <main className="p-6 pt-12">
-  <div className="text-center mb-8">
-    <h1 className="text-4xl font-bold mb-4">Watch AI Movies</h1>
-    <p className="text-gray-600 text-base max-w-xl mx-auto mb-6">
-    Discover short films made with artificial intelligence. <br />
-    Bold, surreal, beautiful.
-  </p>
-
-    <div className="flex justify-center flex-wrap gap-2">
-      {genres.map((genre) => (
-        <a
-          key={genre}
-          href={`/genre/${encodeURIComponent(genre)}`}
-          className="px-3 py-1 rounded-full text-sm"
-          style={{ backgroundColor: '#374151', color: 'white' }}
-        >
-          {genre}
-        </a>
-      ))}
-    </div>
-  </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {movies.map((movie) => (
-          <a
-          key={movie.id}
-          href={`/movie/${movie.slug}`}
-          className="group block cursor-pointer relative"
-        >
-          <div className="relative overflow-hidden rounded-lg">
-            {/* Genre Badges */}
-            <div className="absolute bottom-2 right-2 flex flex-wrap gap-1 z-10">
-              {movie.genre.map((g) => (
-                <span
-                  key={g}
-                  className="bg-white/90 text-black text-xs font-semibold px-2 py-0.5 rounded-full shadow"
-                >
-                  {g}
-                </span>
-              ))}
-            </div>
-            <img
-              src={movie.thumbnail}
-              alt={movie.title}
-              className="w-full aspect-video object-cover transition-transform duration-200 group-hover:scale-105"
-            />
-            
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-80 transition-opacity duration-300 flex items-center justify-center">
-              <svg
-                className="w-12 h-12 text-white opacity-90"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            </div>
-          </div>
-        
-          <h2 className="mt-2 text-lg font-medium">{movie.title}</h2>
-        </a>
-        
-        ))}
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-bold mb-4">Watch AI Movies</h1>
+        <p className="text-gray-600 text-base max-w-xl mx-auto mb-6">
+          Discover short films made with artificial intelligence. <br />
+          Bold, surreal, beautiful.
+        </p>
+        <div className="flex justify-center flex-wrap gap-2 mb-4">
+          {genres.map((genre) => (
+            <a
+              key={genre}
+              href={`/genre/${encodeURIComponent(genre)}`}
+              className="px-3 py-1 rounded-full text-sm"
+              style={{ backgroundColor: '#374151', color: 'white' }}
+            >
+              {genre}
+            </a>
+          ))}
+        </div>
       </div>
 
-      
+      {/* Featured AI Movies */}
+      <section className="mb-10">
+        <h2 className="text-2xl font-semibold mb-3">Featured AI Movies</h2>
+        <div className="flex gap-4 overflow-x-auto pb-2">
+          {featured.map((movie) => (
+            <MovieThumbnail key={movie.id} movie={movie} />
+          ))}
+        </div>
+      </section>
+
+      {/* Genre Rows */}
+      <div className="space-y-10">
+        {genres.map((genre) => {
+          const genreMovies = movies.filter((m) =>
+            m.genre.map((g) => g.toLowerCase()).includes(genre)
+          );
+          if (genreMovies.length === 0) return null;
+          return (
+            <section key={genre}>
+              <div className="flex items-center mb-3">
+                <a
+                  href={`/genre/${encodeURIComponent(genre)}`}
+                  className="text-xl font-bold hover:underline mr-2"
+                >
+                  {genre.charAt(0).toUpperCase() + genre.slice(1)}
+                </a>
+              </div>
+              <div className="flex gap-4 overflow-x-auto pb-2">
+                {genreMovies.map((movie) => (
+                  <MovieThumbnail key={movie.id} movie={movie} />
+                ))}
+              </div>
+            </section>
+          );
+        })}
+      </div>
     </main>
   );
 }
