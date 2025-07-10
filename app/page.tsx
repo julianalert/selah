@@ -2,6 +2,7 @@
 import movies from '../data/movies.json';
 import { Movie } from '../types/Movie';
 import { MovieThumbnail } from '../components/MovieThumbnail';
+import { GenreRow } from '../components/GenreRow';
 
 const genres = Array.from(
   new Set((movies as Movie[]).flatMap((m) => m.genre.map((g) => g.toLowerCase())))
@@ -55,21 +56,7 @@ export default function HomePage() {
           );
           if (genreMovies.length === 0) return null;
           return (
-            <section key={genre}>
-              <div className="flex items-center mb-3">
-                <a
-                  href={`/genre/${encodeURIComponent(genre)}`}
-                  className="text-xl font-bold hover:underline mr-2"
-                >
-                  {genre.charAt(0).toUpperCase() + genre.slice(1)}
-                </a>
-              </div>
-              <div className="flex gap-4 overflow-x-auto pb-2">
-                {genreMovies.map((movie) => (
-                  <MovieThumbnail key={movie.id} movie={movie} />
-                ))}
-              </div>
-            </section>
+            <GenreRow key={genre} genre={genre} movies={genreMovies} />
           );
         })}
       </div>

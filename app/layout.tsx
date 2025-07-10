@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Watch AI Movies",
     description: "A curated collection of AI-generated short films.",
-    images: ["/thumbnail.jpg"]
+    images: ["/thumbnail.png"]
   }
 };
 
