@@ -196,6 +196,17 @@
         "genre": ["Comedy", "Experimental"],
         "creator": "Carol Delgado",
         "year": 2025
+      },
+      {
+        "id": 19,
+        "title": "LAZERTA POPULUS",
+        "slug": "lazerta-populus",
+        "description": "A lonesome streamer obsessed with conspiracy theories spends his days criticizing and insulting the Lizard People, a mythological underground race of reptilians. Little does he know that the real lizard people are onto him.",
+        "thumbnail": "/thumbnails/lazerta-populus.jpg",
+        "videoUrl": "https://www.youtube.com/embed/vwgjro2-QJg",
+        "genre": ["Comedy", "Experimental"],
+        "creator": "Robot Garden",
+        "year": 2024
       }
 
 
