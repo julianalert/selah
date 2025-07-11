@@ -4,9 +4,18 @@ import { useEffect, useMemo, useState } from 'react';
 import { notFound } from 'next/navigation';
 import { supabase } from '../../../lib/supabaseClient';
 import { Movie } from '../../../types/Movie';
+import { Youtube, Twitter, Instagram, Globe } from 'lucide-react';
 
-function creatorToSlug(creator: string) {
-  return creator.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+interface Creator {
+  id: number;
+  name: string;
+  slug: string;
+  avatar?: string;
+  bio?: string;
+  youtube?: string;
+  twitter?: string;
+  instagram?: string;
+  website?: string;
 }
 
 function normalizeMovie(movie: unknown): Movie {
@@ -33,59 +42,124 @@ function normalizeMovie(movie: unknown): Movie {
 export function ClientCreatorPage({ slug }: { slug: string }) {
   const creatorSlug = decodeURIComponent(slug).toLowerCase();
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [creator, setCreator] = useState<Creator | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchMovies() {
+    async function fetchCreatorAndMovies() {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('movies')
-        .select('*');
-      if (!error && data) {
-        setMovies(data.map(normalizeMovie));
+      
+      // First, get the creator by slug
+      const { data: creatorData, error: creatorError } = await supabase
+        .from('creators')
+        .select('*')
+        .eq('slug', creatorSlug)
+        .single();
+
+      if (creatorError || !creatorData) {
+        setLoading(false);
+        return;
       }
+
+      setCreator(creatorData);
+
+      // Then, get all movies by this creator
+      const { data: moviesData, error: moviesError } = await supabase
+        .from('movies')
+        .select('*')
+        .eq('creator_id', creatorData.id);
+
+      if (!moviesError && moviesData) {
+        setMovies(moviesData.map(normalizeMovie));
+      }
+      
       setLoading(false);
     }
-    fetchMovies();
-  }, []);
 
-  // Find the original creator name that matches the slug
-  const originalCreator = useMemo(() => {
-    const allCreators = Array.from(
-      new Set(movies.map((m) => m.creator))
-    );
-    return allCreators.find((c) => creatorToSlug(c) === creatorSlug) || creatorSlug;
-  }, [creatorSlug, movies]);
-
-  const filtered = useMemo(() => {
-    return movies.filter((movie) => {
-      const movieCreator = Array.isArray(movie.creator) 
-        ? movie.creator.join(', ') 
-        : movie.creator;
-      return creatorToSlug(movieCreator) === creatorSlug;
-    });
-  }, [creatorSlug, movies]);
+    fetchCreatorAndMovies();
+  }, [creatorSlug]);
 
   if (loading) {
     return <main className="p-6 pt-12 text-center">Loading...</main>;
   }
 
-  if (filtered.length === 0) return notFound();
-
-  const capitalizedCreator =
-    originalCreator.charAt(0).toUpperCase() + originalCreator.slice(1);
+  if (!creator || movies.length === 0) return notFound();
 
   return (
-    <main className="p-6 pt-12">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold mb-2">AI Films by {capitalizedCreator}</h1>
+    <main className="p-6 pt-8">
+      <div className="text-center mb-12">
+        {creator.avatar && (
+          <div className="flex justify-center mb-4">
+            <img
+              src={creator.avatar}
+              alt={creator.name}
+              className="w-24 h-24 rounded-full object-cover shadow-lg"
+            />
+          </div>
+        )}
+        <h1 className="text-4xl font-bold mb-2">AI Films by {creator.name}</h1>
         <p className="text-gray-600 text-base max-w-xl mx-auto mb-6">
-          Watch all short films created by <strong>{capitalizedCreator}</strong> — all made with AI.
+          {creator.bio ? (
+            creator.bio
+          ) : (
+            <>Watch all short films created by <strong>{creator.name}</strong> — all made with AI.</>
+          )}
         </p>
+        
+        {/* Social Links */}
+        {(creator.youtube || creator.twitter || creator.instagram || creator.website) && (
+          <div className="flex gap-4 justify-center mt-4">
+            {creator.youtube && (
+              <a
+                href={creator.youtube}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-red-600 hover:text-red-700 transition-colors"
+                title="YouTube"
+              >
+                <Youtube size={20} />
+              </a>
+            )}
+            {creator.twitter && (
+              <a
+                href={creator.twitter}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:text-blue-600 transition-colors"
+                title="Twitter/X"
+              >
+                <Twitter size={20} />
+              </a>
+            )}
+            {creator.instagram && (
+              <a
+                href={creator.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-pink-600 hover:text-pink-700 transition-colors"
+                title="Instagram"
+              >
+                <Instagram size={20} />
+              </a>
+            )}
+            {creator.website && (
+              <a
+                href={creator.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-600 hover:text-gray-700 transition-colors"
+                title="Website"
+              >
+                <Globe size={20} />
+              </a>
+            )}
+          </div>
+        )}
       </div>
 
+      {/* Movies Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {filtered.map((movie) => (
+        {movies.map((movie) => (
           <a
             key={movie.id}
             href={`/movie/${movie.slug}`}
@@ -108,7 +182,7 @@ export function ClientCreatorPage({ slug }: { slug: string }) {
               </div>
               <div className="absolute bottom-2 right-2 z-10">
                 <span className="bg-white/90 text-black text-xs font-semibold px-2 py-0.5 rounded-full shadow">
-                  {capitalizedCreator}
+                  {creator.name}
                 </span>
               </div>
             </div>
