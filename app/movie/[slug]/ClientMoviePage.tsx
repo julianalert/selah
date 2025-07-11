@@ -66,7 +66,14 @@ export function ClientMoviePage({ slug }: { slug: string }) {
       </div>
       <p className="text-gray-700 mb-2">{movie.description}</p>
       <p className="text-sm text-gray-500">
-        Created by <strong>{movie.creator}</strong> • {movie.year} •{' '}
+        Created by <strong>
+          <Link
+            href={`/creator/${creatorToSlug(movie.creator)}`}
+            className="underline hover:text-orange-400 transition-colors"
+          >
+            {movie.creator}
+          </Link>
+        </strong> • {movie.year} •{' '}
         {movie.genre.map((g, i) => (
           <>
             <Link
@@ -134,4 +141,8 @@ function normalizeMovie(movie: unknown): Movie {
 
 function genreToSlug(genre: string) {
   return genre.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+}
+
+function creatorToSlug(creator: string) {
+  return creator.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 }
