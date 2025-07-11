@@ -78,7 +78,7 @@ export function ClientCreatorPage({ slug }: { slug: string }) {
   return (
     <main className="p-6 pt-12">
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold mb-2">Films by {capitalizedCreator}</h1>
+        <h1 className="text-4xl font-bold mb-2">AI Films by {capitalizedCreator}</h1>
         <p className="text-gray-600 text-base max-w-xl mx-auto mb-6">
           Watch all short films created by <strong>{capitalizedCreator}</strong> — all made with AI.
         </p>
