@@ -5,10 +5,11 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Rating from '../../../components/Rating';
 import { supabase } from '../../../lib/supabaseClient';
+import { Movie } from '../../../types/Movie';
 
 export function ClientMoviePage({ slug }: { slug: string }) {
-  const [movie, setMovie] = useState<any | null>(null);
-  const [related, setRelated] = useState<any[]>([]);
+  const [movie, setMovie] = useState<Movie | null>(null);
+  const [related, setRelated] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,10 +23,10 @@ export function ClientMoviePage({ slug }: { slug: string }) {
         .single();
       if (!movieError && movieData) {
         // Normalize creator and genre
-        const normalizedMovie = {
+        const normalizedMovie: Movie = {
           ...movieData,
-          creator: Array.isArray(movieData.creator) && movieData.creator.length === 1 ? movieData.creator[0] : movieData.creator,
-          genre: Array.isArray(movieData.genre) ? movieData.genre : [],
+          creator: Array.isArray((movieData as any).creator) && (movieData as any).creator.length === 1 ? (movieData as any).creator[0] : (movieData as any).creator,
+          genre: Array.isArray((movieData as any).genre) ? (movieData as any).genre : [],
         };
         setMovie(normalizedMovie);
         // Fetch related movies (same genre, different id)
@@ -35,7 +36,7 @@ export function ClientMoviePage({ slug }: { slug: string }) {
             .select('*')
             .neq('id', normalizedMovie.id);
           if (relatedData) {
-            const relatedMovies = relatedData.filter((m: any) =>
+            const relatedMovies: Movie[] = relatedData.filter((m: Movie) =>
               m.genre && m.genre.some((g: string) => normalizedMovie.genre.includes(g))
             ).slice(0, 4);
             setRelated(relatedMovies);
@@ -59,7 +60,7 @@ export function ClientMoviePage({ slug }: { slug: string }) {
       
       <div className="aspect-video mb-4">
         <iframe
-          src={movie.video_url}
+          src={movie.videoUrl}
           title={movie.title}
           className="w-full h-full rounded-lg"
           allowFullScreen

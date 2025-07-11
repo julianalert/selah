@@ -25,12 +25,11 @@ export default function HomePage() {
         .from('movies')
         .select('*');
       if (!error && data) {
-        // Map creator to string if it's an array of one
         setMovies(
-          data.map((movie: any) => ({
+          data.map((movie: Movie) => ({
             ...movie,
-            creator: Array.isArray(movie.creator) && movie.creator.length === 1 ? movie.creator[0] : movie.creator,
-            genre: Array.isArray(movie.genre) ? movie.genre : [],
+            creator: Array.isArray((movie as any).creator) && (movie as any).creator.length === 1 ? (movie as any).creator[0] : (movie as any).creator,
+            genre: Array.isArray((movie as any).genre) ? (movie as any).genre : [],
           }))
         );
       }

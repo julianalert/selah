@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { notFound } from 'next/navigation';
 import { supabase } from '../../../lib/supabaseClient';
+import { Movie } from '../../../types/Movie';
 
 function genreToSlug(genre: string) {
   return genre.toLowerCase().replace(/[\s/]+/g, '-');
@@ -10,7 +11,7 @@ function genreToSlug(genre: string) {
 
 export function ClientGenrePage({ slug }: { slug: string }) {
   const genreSlug = decodeURIComponent(slug).toLowerCase();
-  const [movies, setMovies] = useState<any[]>([]);
+  const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,10 +22,10 @@ export function ClientGenrePage({ slug }: { slug: string }) {
         .select('*');
       if (!error && data) {
         setMovies(
-          data.map((movie: any) => ({
+          data.map((movie: Movie) => ({
             ...movie,
-            creator: Array.isArray(movie.creator) && movie.creator.length === 1 ? movie.creator[0] : movie.creator,
-            genre: Array.isArray(movie.genre) ? movie.genre : [],
+            creator: Array.isArray((movie as any).creator) && (movie as any).creator.length === 1 ? (movie as any).creator[0] : (movie as any).creator,
+            genre: Array.isArray((movie as any).genre) ? (movie as any).genre : [],
           }))
         );
       }
