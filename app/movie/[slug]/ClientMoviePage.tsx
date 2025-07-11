@@ -22,12 +22,7 @@ export function ClientMoviePage({ slug }: { slug: string }) {
         .eq('slug', slug)
         .single();
       if (!movieError && movieData) {
-        // Normalize creator and genre
-        const normalizedMovie: Movie = {
-          ...movieData,
-          creator: Array.isArray((movieData as any).creator) && (movieData as any).creator.length === 1 ? (movieData as any).creator[0] : (movieData as any).creator,
-          genre: Array.isArray((movieData as any).genre) ? (movieData as any).genre : [],
-        };
+        const normalizedMovie = normalizeMovie(movieData);
         setMovie(normalizedMovie);
         // Fetch related movies (same genre, different id)
         if (normalizedMovie.genre.length > 0) {
@@ -36,9 +31,12 @@ export function ClientMoviePage({ slug }: { slug: string }) {
             .select('*')
             .neq('id', normalizedMovie.id);
           if (relatedData) {
-            const relatedMovies: Movie[] = relatedData.filter((m: Movie) =>
-              m.genre && m.genre.some((g: string) => normalizedMovie.genre.includes(g))
-            ).slice(0, 4);
+            const relatedMovies: Movie[] = (relatedData as unknown[])
+              .map(normalizeMovie)
+              .filter((m) =>
+                m.genre && m.genre.some((g: string) => normalizedMovie.genre.includes(g))
+              )
+              .slice(0, 4);
             setRelated(relatedMovies);
           }
         }
@@ -100,4 +98,25 @@ export function ClientMoviePage({ slug }: { slug: string }) {
       )}
     </main>
   );
+}
+
+function normalizeMovie(movie: unknown): Movie {
+  const m = movie as Record<string, unknown>;
+  let creator: string;
+  if (Array.isArray(m.creator)) {
+    creator = (m.creator as string[]).join(', ');
+  } else {
+    creator = m.creator as string;
+  }
+  return {
+    id: m.id as number,
+    title: m.title as string,
+    slug: m.slug as string,
+    description: m.description as string,
+    thumbnail: m.thumbnail as string,
+    videoUrl: (m.videoUrl || m.video_url) as string,
+    genre: Array.isArray(m.genre) ? m.genre as string[] : [],
+    creator,
+    year: m.year as number,
+  };
 }
