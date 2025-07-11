@@ -7,8 +7,15 @@ import Rating from '../../../components/Rating';
 import { supabase } from '../../../lib/supabaseClient';
 import { Movie } from '../../../types/Movie';
 
+interface Creator {
+  id: number;
+  name: string;
+  slug: string;
+}
+
 export function ClientMoviePage({ slug }: { slug: string }) {
   const [movie, setMovie] = useState<Movie | null>(null);
+  const [creator, setCreator] = useState<Creator | null>(null);
   const [related, setRelated] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -24,6 +31,19 @@ export function ClientMoviePage({ slug }: { slug: string }) {
       if (!movieError && movieData) {
         const normalizedMovie = normalizeMovie(movieData);
         setMovie(normalizedMovie);
+        
+        // Fetch creator data if creator_id exists
+        if (movieData.creator_id) {
+          const { data: creatorData, error: creatorError } = await supabase
+            .from('creators')
+            .select('*')
+            .eq('id', movieData.creator_id)
+            .single();
+          if (!creatorError && creatorData) {
+            setCreator(creatorData);
+          }
+        }
+        
         // Fetch related movies (same genre, different id)
         if (normalizedMovie.genre.length > 0) {
           const { data: relatedData } = await supabase
@@ -67,12 +87,16 @@ export function ClientMoviePage({ slug }: { slug: string }) {
       <p className="text-gray-700 mb-2">{movie.description}</p>
       <p className="text-sm text-gray-500">
         Created by <strong>
-          <Link
-            href={`/creator/${creatorToSlug(movie.creator)}`}
-            className="underline hover:text-orange-400 transition-colors"
-          >
-            {movie.creator}
-          </Link>
+          {creator ? (
+            <Link
+              href={`/creator/${creator.slug}`}
+              className="underline hover:text-orange-400 transition-colors"
+            >
+              {creator.name}
+            </Link>
+          ) : (
+            movie.creator
+          )}
         </strong> • {movie.year} •{' '}
         {movie.genre.map((g, i) => (
           <>
@@ -141,8 +165,4 @@ function normalizeMovie(movie: unknown): Movie {
 
 function genreToSlug(genre: string) {
   return genre.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-}
-
-function creatorToSlug(creator: string) {
-  return creator.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 }
