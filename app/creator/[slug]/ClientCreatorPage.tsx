@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { notFound } from 'next/navigation';
 import { supabase } from '../../../lib/supabaseClient';
 import { Movie } from '../../../types/Movie';
