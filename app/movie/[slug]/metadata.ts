@@ -1,8 +1,12 @@
-import movies from '../../../data/movies.json';
+import { supabase } from '../../../lib/supabaseClient';
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const movie = movies.find((m) => m.slug === params.slug);
-  if (!movie) return {};
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const { data: movie, error } = await supabase
+    .from('movies')
+    .select('*')
+    .eq('slug', params.slug)
+    .single();
+  if (error || !movie) return {};
 
   return {
     title: `${movie.title} – AI Short Film`,

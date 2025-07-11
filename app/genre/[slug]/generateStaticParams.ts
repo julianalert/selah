@@ -1,11 +1,15 @@
-import movies from '../../../data/movies.json';
+import { supabase } from '../../../lib/supabaseClient';
 
-export function generateStaticParams() {
-  const genresSet = new Set<string>();
-
+export async function generateStaticParams() {
+  const { data: movies, error } = await supabase
+    .from('movies')
+    .select('genre');
+  if (error || !movies) return [];
+  const genresSet = new Set();
   movies.forEach((movie) => {
-    movie.genre.forEach((g) => genresSet.add(g.toLowerCase()));
+    if (Array.isArray(movie.genre)) {
+      movie.genre.forEach((g) => genresSet.add(g.toLowerCase()));
+    }
   });
-
   return Array.from(genresSet).map((slug) => ({ slug }));
 }

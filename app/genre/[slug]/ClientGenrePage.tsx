@@ -1,8 +1,8 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { notFound } from 'next/navigation';
-import movies from '../../../data/movies.json';
+import { supabase } from '../../../lib/supabaseClient';
 
 function genreToSlug(genre: string) {
   return genre.toLowerCase().replace(/[\s/]+/g, '-');
@@ -10,6 +10,28 @@ function genreToSlug(genre: string) {
 
 export function ClientGenrePage({ slug }: { slug: string }) {
   const genreSlug = decodeURIComponent(slug).toLowerCase();
+  const [movies, setMovies] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchMovies() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('movies')
+        .select('*');
+      if (!error && data) {
+        setMovies(
+          data.map((movie: any) => ({
+            ...movie,
+            creator: Array.isArray(movie.creator) && movie.creator.length === 1 ? movie.creator[0] : movie.creator,
+            genre: Array.isArray(movie.genre) ? movie.genre : [],
+          }))
+        );
+      }
+      setLoading(false);
+    }
+    fetchMovies();
+  }, []);
 
   // Find the original genre name that matches the slug
   const originalGenre = useMemo(() => {
@@ -17,13 +39,17 @@ export function ClientGenrePage({ slug }: { slug: string }) {
       new Set(movies.flatMap((m) => m.genre))
     );
     return allGenres.find((g) => genreToSlug(g) === genreSlug) || genreSlug;
-  }, [genreSlug]);
+  }, [genreSlug, movies]);
 
   const filtered = useMemo(() => {
     return movies.filter((movie) =>
-      movie.genre.map((g) => genreToSlug(g)).includes(genreSlug)
+      movie.genre.map((g: string) => genreToSlug(g)).includes(genreSlug)
     );
-  }, [genreSlug]);
+  }, [genreSlug, movies]);
+
+  if (loading) {
+    return <main className="p-6 pt-12 text-center">Loading...</main>;
+  }
 
   if (filtered.length === 0) return notFound();
 

@@ -1,12 +1,55 @@
 'use client';
 
-import movies from '../../../data/movies.json';
+import { useEffect, useState } from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Rating from '../../../components/Rating';
+import { supabase } from '../../../lib/supabaseClient';
 
 export function ClientMoviePage({ slug }: { slug: string }) {
-  const movie = movies.find((m) => m.slug === slug);
+  const [movie, setMovie] = useState<any | null>(null);
+  const [related, setRelated] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchMovie() {
+      setLoading(true);
+      // Fetch the movie by slug
+      const { data: movieData, error: movieError } = await supabase
+        .from('movies')
+        .select('*')
+        .eq('slug', slug)
+        .single();
+      if (!movieError && movieData) {
+        // Normalize creator and genre
+        const normalizedMovie = {
+          ...movieData,
+          creator: Array.isArray(movieData.creator) && movieData.creator.length === 1 ? movieData.creator[0] : movieData.creator,
+          genre: Array.isArray(movieData.genre) ? movieData.genre : [],
+        };
+        setMovie(normalizedMovie);
+        // Fetch related movies (same genre, different id)
+        if (normalizedMovie.genre.length > 0) {
+          const { data: relatedData } = await supabase
+            .from('movies')
+            .select('*')
+            .neq('id', normalizedMovie.id);
+          if (relatedData) {
+            const relatedMovies = relatedData.filter((m: any) =>
+              m.genre && m.genre.some((g: string) => normalizedMovie.genre.includes(g))
+            ).slice(0, 4);
+            setRelated(relatedMovies);
+          }
+        }
+      }
+      setLoading(false);
+    }
+    fetchMovie();
+  }, [slug]);
+
+  if (loading) {
+    return <main className="p-6 pt-12 text-center">Loading...</main>;
+  }
 
   if (!movie) return notFound();
 
@@ -16,7 +59,7 @@ export function ClientMoviePage({ slug }: { slug: string }) {
       
       <div className="aspect-video mb-4">
         <iframe
-          src={movie.videoUrl}
+          src={movie.video_url}
           title={movie.title}
           className="w-full h-full rounded-lg"
           allowFullScreen
@@ -33,31 +76,24 @@ export function ClientMoviePage({ slug }: { slug: string }) {
       </div>
 
       {/* More Like This */}
-      {movie.genre.length > 0 && (
+      {movie.genre.length > 0 && related.length > 0 && (
         <div className="mt-12">
           <h2 className="text-2xl font-semibold mb-4">More like this</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {movies
-              .filter(
-                (m) =>
-                  m.id !== movie.id &&
-                  m.genre.some((g) => movie.genre.includes(g))
-              )
-              .slice(0, 4)
-              .map((related) => (
-                <Link
-                  key={related.id}
-                  href={`/movie/${related.slug}`}
-                  className="group block"
-                >
-                  <img
-                    src={related.thumbnail}
-                    alt={related.title}
-                    className="rounded-lg w-full aspect-video object-cover group-hover:scale-105 transition-transform"
-                  />
-                  <h3 className="mt-2 text-sm font-medium">{related.title}</h3>
-                </Link>
-              ))}
+            {related.map((relatedMovie) => (
+              <Link
+                key={relatedMovie.id}
+                href={`/movie/${relatedMovie.slug}`}
+                className="group block"
+              >
+                <img
+                  src={relatedMovie.thumbnail}
+                  alt={relatedMovie.title}
+                  className="rounded-lg w-full aspect-video object-cover group-hover:scale-105 transition-transform"
+                />
+                <h3 className="mt-2 text-sm font-medium">{relatedMovie.title}</h3>
+              </Link>
+            ))}
           </div>
         </div>
       )}

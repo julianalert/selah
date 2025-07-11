@@ -1,7 +1,9 @@
-import movies from '../../../data/movies.json';
+import { supabase } from '../../../lib/supabaseClient';
 
-export function generateStaticParams() {
-  return movies.map((movie) => ({
-    slug: movie.slug,
-  }));
+export async function generateStaticParams() {
+  const { data: movies, error } = await supabase
+    .from('movies')
+    .select('slug');
+  if (error || !movies) return [];
+  return movies.map((movie) => ({ slug: movie.slug }));
 }

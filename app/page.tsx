@@ -1,12 +1,9 @@
 'use client';
-import movies from '../data/movies.json';
+import { useEffect, useState } from 'react';
+import { supabase } from '../lib/supabaseClient';
 import { Movie } from '../types/Movie';
 import { MovieThumbnail } from '../components/MovieThumbnail';
 import { GenreRow } from '../components/GenreRow';
-
-const genres = Array.from(
-  new Set((movies as Movie[]).flatMap((m) => m.genre.map((g) => g.toLowerCase())))
-);
 
 function getRandomMovies(movies: Movie[], count: number): Movie[] {
   const shuffled = [...movies].sort(() => 0.5 - Math.random());
@@ -18,7 +15,39 @@ function genreToSlug(genre: string) {
 }
 
 export default function HomePage() {
-  const featured = getRandomMovies(movies as Movie[], 4);
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchMovies() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('movies')
+        .select('*');
+      if (!error && data) {
+        // Map creator to string if it's an array of one
+        setMovies(
+          data.map((movie: any) => ({
+            ...movie,
+            creator: Array.isArray(movie.creator) && movie.creator.length === 1 ? movie.creator[0] : movie.creator,
+            genre: Array.isArray(movie.genre) ? movie.genre : [],
+          }))
+        );
+      }
+      setLoading(false);
+    }
+    fetchMovies();
+  }, []);
+
+  const genres = Array.from(
+    new Set(movies.flatMap((m) => m.genre.map((g: string) => g.toLowerCase())))
+  );
+
+  const featured = getRandomMovies(movies, 4);
+
+  if (loading) {
+    return <main className="p-6 pt-12 text-center">Loading...</main>;
+  }
 
   return (
     <main className="p-6 pt-12">
@@ -55,8 +84,8 @@ export default function HomePage() {
       {/* Genre Rows */}
       <div className="space-y-10">
         {genres.map((genre) => {
-          const genreMovies = (movies as Movie[]).filter((m) =>
-            m.genre.map((g) => g.toLowerCase()).includes(genre)
+          const genreMovies = movies.filter((m) =>
+            m.genre.map((g: string) => g.toLowerCase()).includes(genre)
           );
           if (genreMovies.length === 0) return null;
           return (
