@@ -14,6 +14,27 @@ function genreToSlug(genre: string) {
   return genre.toLowerCase().replace(/[\s/]+/g, '-');
 }
 
+function normalizeMovie(movie: unknown): Movie {
+  const m = movie as Record<string, unknown>;
+  let creator: string;
+  if (Array.isArray(m.creator)) {
+    creator = (m.creator as string[]).join(', ');
+  } else {
+    creator = m.creator as string;
+  }
+  return {
+    id: m.id as number,
+    title: m.title as string,
+    slug: m.slug as string,
+    description: m.description as string,
+    thumbnail: m.thumbnail as string,
+    videoUrl: (m.videoUrl || m.video_url) as string,
+    genre: Array.isArray(m.genre) ? m.genre as string[] : [],
+    creator,
+    year: m.year as number,
+  };
+}
+
 export default function HomePage() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,13 +46,7 @@ export default function HomePage() {
         .from('movies')
         .select('*');
       if (!error && data) {
-        setMovies(
-          data.map((movie: Movie) => ({
-            ...movie,
-            creator: Array.isArray((movie as any).creator) && (movie as any).creator.length === 1 ? (movie as any).creator[0] : (movie as any).creator,
-            genre: Array.isArray((movie as any).genre) ? (movie as any).genre : [],
-          }))
-        );
+        setMovies(data.map(normalizeMovie));
       }
       setLoading(false);
     }
