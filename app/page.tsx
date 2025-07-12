@@ -17,9 +17,7 @@ function getRandomMovies(movies: Movie[], count: number): Movie[] {
   return shuffled.slice(0, count);
 }
 
-function genreToSlug(genre: string) {
-  return genre.toLowerCase().replace(/[\s/]+/g, '-');
-}
+
 
 function normalizeMovie(movie: unknown): Movie {
   const m = movie as Record<string, unknown>;
@@ -122,7 +120,7 @@ export default function HomePage() {
           );
           if (genreMovies.length === 0) return null;
           return (
-            <GenreRow key={genre.id} genre={genre.name} movies={genreMovies} />
+            <GenreRow key={genre.id} genre={genre} movies={genreMovies} />
           );
         })}
       </div>

@@ -2,12 +2,14 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Movie } from '../types/Movie';
 import { MovieThumbnail } from './MovieThumbnail';
 
-function genreToSlug(genre: string) {
-  return genre.toLowerCase().replace(/[\s/]+/g, '-');
+interface Genre {
+  id: number;
+  name: string;
+  slug: string;
 }
 
 interface GenreRowProps {
-  genre: string;
+  genre: Genre;
   movies: Movie[];
 }
 
@@ -41,10 +43,10 @@ export function GenreRow({ genre, movies }: GenreRowProps) {
     <section>
       <div className="flex items-center mb-3">
         <a
-          href={`/genre/${genreToSlug(genre)}`}
+          href={`/genre/${genre.slug}`}
           className="text-xl font-bold hover:underline mr-2"
         >
-          {genre.charAt(0).toUpperCase() + genre.slice(1)}
+          {genre.name}
         </a>
       </div>
       <div className="flex gap-4 overflow-x-auto pb-2">
