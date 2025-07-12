@@ -88,7 +88,7 @@ export default function AdminPage() {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        await response.json(); // Just consume the response
         setFormData(prev => ({
           ...prev,
           thumbnail: `/thumbnails/${filename}`
