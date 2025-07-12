@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import Rating from '../../../components/Rating';
 import { supabase } from '../../../lib/supabaseClient';
 import { Movie } from '../../../types/Movie';
@@ -66,14 +67,14 @@ export function ClientMoviePage({ slug }: { slug: string }) {
         
         if (!genreError && genreData) {
           const movieGenres = genreData
-            .map(item => item.genres as any)
+            .map(item => (item.genres as unknown as { id: number; name: string; slug: string }))
             .filter(Boolean) as Genre[];
           setGenres(movieGenres);
         }
         
         // Fetch related movies (same genres, different id)
         if (genreData && genreData.length > 0) {
-          const genreIds = genreData.map(item => (item.genres as any)?.id).filter(Boolean);
+          const genreIds = genreData.map(item => ((item.genres as unknown as { id: number; name: string; slug: string })?.id)).filter(Boolean);
           
           // Get movies that share any of the same genres
           const { data: relatedData } = await supabase
@@ -170,9 +171,11 @@ export function ClientMoviePage({ slug }: { slug: string }) {
                 href={`/movie/${relatedMovie.slug}`}
                 className="group block"
               >
-                <img
+                <Image
                   src={relatedMovie.thumbnail}
                   alt={relatedMovie.title}
+                  width={300}
+                  height={169}
                   className="rounded-lg w-full aspect-video object-cover group-hover:scale-105 transition-transform"
                 />
                 <h3 className="mt-2 text-sm font-medium">{relatedMovie.title}</h3>
