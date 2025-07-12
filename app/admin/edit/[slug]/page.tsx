@@ -1,13 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { supabase } from '../../lib/supabaseClient';
+import { useRouter } from 'next/navigation';
+import { notFound } from 'next/navigation';
+import { supabase } from '../../../../lib/supabaseClient';
 
 interface Creator {
   id: number;
   name: string;
   slug: string;
+  bio?: string;
+  avatar?: string;
+  twitter?: string;
+  instagram?: string;
+  website?: string;
 }
 
 interface Genre {
@@ -16,7 +22,28 @@ interface Genre {
   slug: string;
 }
 
-export default function AdminPage() {
+interface MovieData {
+  id: number;
+  title: string;
+  slug: string;
+  description: string;
+  video_url: string;
+  thumbnail: string;
+  year: number;
+  creator_id: number | null;
+}
+
+export default function EditMoviePage({ params }: { params: { slug: string } }) {
+  const router = useRouter();
+  const [movie, setMovie] = useState<MovieData | null>(null);
+  const [creator, setCreator] = useState<Creator | null>(null);
+  const [movieGenres, setMovieGenres] = useState<Genre[]>([]);
+  const [existingCreators, setExistingCreators] = useState<Creator[]>([]);
+  const [existingGenres, setExistingGenres] = useState<Genre[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState('');
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -35,31 +62,94 @@ export default function AdminPage() {
     selectedCreatorId: null as number | null
   });
 
-  const [existingCreators, setExistingCreators] = useState<Creator[]>([]);
-  const [existingGenres, setExistingGenres] = useState<Genre[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
-
-  // Load existing creators and genres on component mount
+  // Load movie data and existing creators/genres
   useEffect(() => {
-    loadExistingData();
-  }, []);
+    async function loadData() {
+      setLoading(true);
+      
+      // Load existing creators and genres
+      const [creatorsResponse, genresResponse] = await Promise.all([
+        supabase.from('creators').select('*').order('name'),
+        supabase.from('genres').select('*').order('name')
+      ]);
+      
+      if (creatorsResponse.data) setExistingCreators(creatorsResponse.data);
+      if (genresResponse.data) setExistingGenres(genresResponse.data);
 
-  async function loadExistingData() {
-    // Load creators
-    const { data: creators } = await supabase
-      .from('creators')
-      .select('*')
-      .order('name');
-    if (creators) setExistingCreators(creators);
+      // Load movie data
+      const { data: movieData, error: movieError } = await supabase
+        .from('movies')
+        .select('*')
+        .eq('slug', params.slug)
+        .single();
 
-    // Load genres
-    const { data: genres } = await supabase
-      .from('genres')
-      .select('*')
-      .order('name');
-    if (genres) setExistingGenres(genres);
-  }
+      if (movieError || !movieData) {
+        setLoading(false);
+        return notFound();
+      }
+
+      setMovie(movieData);
+
+      // Load creator data
+      let creatorData = null;
+      if (movieData.creator_id) {
+        const { data: creator } = await supabase
+          .from('creators')
+          .select('*')
+          .eq('id', movieData.creator_id)
+          .single();
+        
+        if (creator) {
+          creatorData = creator;
+          setCreator(creator);
+        }
+      }
+
+      // Load movie genres
+      const { data: genreData } = await supabase
+        .from('movie_genres')
+        .select(`
+          genres (
+            id,
+            name,
+            slug
+          )
+        `)
+        .eq('movie_id', movieData.id);
+
+      let movieGenresData: Genre[] = [];
+      if (genreData) {
+        const genres = genreData
+          .map(item => (item.genres as unknown as Genre))
+          .filter(Boolean);
+        movieGenresData = genres;
+        setMovieGenres(genres);
+      }
+
+      // Populate form data
+      setFormData({
+        title: movieData.title,
+        description: movieData.description || '',
+        videoUrl: movieData.video_url || '',
+        thumbnail: movieData.thumbnail || '',
+        year: movieData.year,
+        creatorName: creatorData?.name || '',
+        creatorSlug: creatorData?.slug || '',
+        creatorBio: creatorData?.bio || '',
+        creatorAvatar: creatorData?.avatar || '',
+        creatorTwitter: creatorData?.twitter || '',
+        creatorInstagram: creatorData?.instagram || '',
+        creatorWebsite: creatorData?.website || '',
+        genres: movieGenresData.map(g => g.name),
+        newGenres: [],
+        selectedCreatorId: movieData.creator_id
+      });
+
+      setLoading(false);
+    }
+
+    loadData();
+  }, [params.slug]);
 
   function generateSlug(text: string): string {
     return text
@@ -72,12 +162,10 @@ export default function AdminPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Generate a unique filename
     const movieSlug = generateSlug(formData.title || 'movie');
     const fileExtension = file.name.split('.').pop();
     const filename = `${movieSlug}.${fileExtension}`;
     
-    // Create FormData for upload
     const uploadData = new FormData();
     uploadData.append('file', file);
     uploadData.append('filename', filename);
@@ -89,7 +177,7 @@ export default function AdminPage() {
       });
 
       if (response.ok) {
-        await response.json(); // Just consume the response
+        await response.json();
         setFormData(prev => ({
           ...prev,
           thumbnail: `/thumbnails/${filename}`
@@ -104,15 +192,16 @@ export default function AdminPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
+    setSaving(true);
     setMessage('');
 
     try {
+      if (!movie) throw new Error('Movie not found');
+
       // 1. Handle creator
       let creatorId: number | undefined;
       
       if (formData.selectedCreatorId) {
-        // Use selected existing creator
         creatorId = formData.selectedCreatorId;
       } else if (formData.creatorName) {
         // Check if creator exists
@@ -145,7 +234,7 @@ export default function AdminPage() {
         }
       }
 
-      // 2. Create movie
+      // 2. Update movie
       const movieSlug = generateSlug(formData.title);
       const movieData = {
         title: formData.title,
@@ -157,20 +246,21 @@ export default function AdminPage() {
         creator_id: creatorId || null
       };
       
-      console.log('Inserting movie data:', movieData);
-      
-      const { data: movie, error: movieError } = await supabase
+      const { error: movieError } = await supabase
         .from('movies')
-        .insert(movieData)
-        .select('id')
-        .single();
+        .update(movieData)
+        .eq('id', movie.id);
 
-      if (movieError) {
-        console.error('Movie insert error:', movieError);
-        throw movieError;
-      }
+      if (movieError) throw movieError;
 
       // 3. Handle genres
+      // First, remove all existing genre relationships
+      await supabase
+        .from('movie_genres')
+        .delete()
+        .eq('movie_id', movie.id);
+
+      // Then add new genre relationships
       const allGenres = [...formData.genres, ...formData.newGenres];
       const genreIds: number[] = [];
 
@@ -206,7 +296,7 @@ export default function AdminPage() {
         genreIds.push(genreId);
       }
 
-      // 4. Create movie-genre junctions
+      // Create new movie-genre junctions
       if (genreIds.length > 0) {
         const junctions = genreIds.map(genreId => ({
           movie_id: movie.id,
@@ -220,51 +310,39 @@ export default function AdminPage() {
         if (junctionError) throw junctionError;
       }
 
-      setMessage('Movie added successfully!');
-      setFormData({
-        title: '',
-        description: '',
-        videoUrl: '',
-        thumbnail: '',
-        year: new Date().getFullYear(),
-        creatorName: '',
-        creatorSlug: '',
-        creatorBio: '',
-        creatorAvatar: '',
-        creatorTwitter: '',
-        creatorInstagram: '',
-        creatorWebsite: '',
-        genres: [],
-        newGenres: [],
-        selectedCreatorId: null
-      });
+      setMessage('Movie updated successfully!');
+      
+      // Redirect to edit movies list after a short delay
+      setTimeout(() => {
+        router.push('/admin/edit');
+      }, 1500);
 
     } catch (error) {
-      console.error('Error adding movie:', error);
-      setMessage('Error adding movie. Please check the console for details.');
+      console.error('Error updating movie:', error);
+      setMessage('Error updating movie. Please check the console for details.');
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
+  }
+
+  if (loading) {
+    return <main className="p-6 max-w-4xl mx-auto">Loading...</main>;
+  }
+
+  if (!movie) {
+    return notFound();
   }
 
   return (
     <main className="p-6 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Add New Movie</h1>
-        <div className="flex gap-2">
-          <Link
-            href="/admin/edit"
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Edit Movies
-          </Link>
-          <Link
-            href="/admin/creators"
-            className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
-          >
-            Edit Creators
-          </Link>
-        </div>
+        <h1 className="text-3xl font-bold">Edit Movie: {movie.title}</h1>
+        <button
+          onClick={() => router.push('/admin/edit')}
+          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+        >
+          Back to Edit Movies
+        </button>
       </div>
       
       {message && (
@@ -557,13 +635,23 @@ export default function AdminPage() {
           </div>
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-400"
-        >
-          {loading ? 'Adding Movie...' : 'Add Movie'}
-        </button>
+        <div className="flex gap-4">
+          <button
+            type="submit"
+            disabled={saving}
+            className="flex-1 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-400"
+          >
+            {saving ? 'Updating Movie...' : 'Update Movie'}
+          </button>
+          
+          <button
+            type="button"
+            onClick={() => router.push('/admin/edit')}
+            className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </main>
   );
