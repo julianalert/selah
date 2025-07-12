@@ -13,9 +13,16 @@ interface Creator {
   slug: string;
 }
 
+interface Genre {
+  id: number;
+  name: string;
+  slug: string;
+}
+
 export function ClientMoviePage({ slug }: { slug: string }) {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [creator, setCreator] = useState<Creator | null>(null);
+  const [genres, setGenres] = useState<Genre[]>([]);
   const [related, setRelated] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -28,6 +35,7 @@ export function ClientMoviePage({ slug }: { slug: string }) {
         .select('*')
         .eq('slug', slug)
         .single();
+      
       if (!movieError && movieData) {
         const normalizedMovie = normalizeMovie(movieData);
         setMovie(normalizedMovie);
@@ -43,21 +51,57 @@ export function ClientMoviePage({ slug }: { slug: string }) {
             setCreator(creatorData);
           }
         }
+
+        // Fetch genres from junction table
+        const { data: genreData, error: genreError } = await supabase
+          .from('movie_genres')
+          .select(`
+            genres (
+              id,
+              name,
+              slug
+            )
+          `)
+          .eq('movie_id', movieData.id);
         
-        // Fetch related movies (same genre, different id)
-        if (normalizedMovie.genre.length > 0) {
+        if (!genreError && genreData) {
+          const movieGenres = genreData
+            .map(item => item.genres as any)
+            .filter(Boolean) as Genre[];
+          setGenres(movieGenres);
+        }
+        
+        // Fetch related movies (same genres, different id)
+        if (genreData && genreData.length > 0) {
+          const genreIds = genreData.map(item => (item.genres as any)?.id).filter(Boolean);
+          
+          // Get movies that share any of the same genres
           const { data: relatedData } = await supabase
-            .from('movies')
-            .select('*')
-            .neq('id', normalizedMovie.id);
-          if (relatedData) {
-            const relatedMovies: Movie[] = (relatedData as unknown[])
-              .map(normalizeMovie)
-              .filter((m) =>
-                m.genre && m.genre.some((g: string) => normalizedMovie.genre.includes(g))
+            .from('movie_genres')
+            .select(`
+              movie_id,
+              genres!inner (
+                id
               )
-              .slice(0, 4);
-            setRelated(relatedMovies);
+            `)
+            .in('genres.id', genreIds)
+            .neq('movie_id', movieData.id);
+          
+          if (relatedData && relatedData.length > 0) {
+            const relatedMovieIds = [...new Set(relatedData.map(item => item.movie_id))];
+            
+            // Fetch the actual movie data for related movies
+            const { data: relatedMoviesData } = await supabase
+              .from('movies')
+              .select('*')
+              .in('id', relatedMovieIds)
+              .limit(4);
+            
+            if (relatedMoviesData) {
+              const relatedMovies: Movie[] = (relatedMoviesData as unknown[])
+                .map(normalizeMovie);
+              setRelated(relatedMovies);
+            }
           }
         }
       }
@@ -98,17 +142,16 @@ export function ClientMoviePage({ slug }: { slug: string }) {
             movie.creator
           )}
         </strong> • {movie.year} •{' '}
-        {movie.genre.map((g, i) => (
-          <>
+        {genres.map((genre, i) => (
+          <span key={genre.id}>
             <Link
-              key={g}
-              href={`/genre/${genreToSlug(g)}`}
+              href={`/genre/${genre.slug}`}
               className="underline hover:text-orange-400 transition-colors"
             >
-              {g}
+              {genre.name}
             </Link>
-            {i < movie.genre.length - 1 && ', '}
-          </>
+            {i < genres.length - 1 && ', '}
+          </span>
         ))}
       </p>
 
@@ -117,7 +160,7 @@ export function ClientMoviePage({ slug }: { slug: string }) {
       </div>
 
       {/* More Like This */}
-      {movie.genre.length > 0 && related.length > 0 && (
+      {genres.length > 0 && related.length > 0 && (
         <div className="mt-12">
           <h2 className="text-2xl font-semibold mb-4">More like this</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

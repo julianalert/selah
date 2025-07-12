@@ -5,6 +5,13 @@ import { Movie } from '../types/Movie';
 import { MovieThumbnail } from '../components/MovieThumbnail';
 import { GenreRow } from '../components/GenreRow';
 
+interface Genre {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+}
+
 function getRandomMovies(movies: Movie[], count: number): Movie[] {
   const shuffled = [...movies].sort(() => 0.5 - Math.random());
   return shuffled.slice(0, count);
@@ -37,25 +44,36 @@ function normalizeMovie(movie: unknown): Movie {
 
 export default function HomePage() {
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [genres, setGenres] = useState<Genre[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchMovies() {
+    async function fetchData() {
       setLoading(true);
-      const { data, error } = await supabase
+      
+      // Fetch all movies
+      const { data: moviesData, error: moviesError } = await supabase
         .from('movies')
         .select('*');
-      if (!error && data) {
-        setMovies(data.map(normalizeMovie));
+      
+      // Fetch all genres
+      const { data: genresData, error: genresError } = await supabase
+        .from('genres')
+        .select('*')
+        .order('name');
+
+      if (!moviesError && moviesData) {
+        setMovies(moviesData.map(normalizeMovie));
       }
+      
+      if (!genresError && genresData) {
+        setGenres(genresData);
+      }
+      
       setLoading(false);
     }
-    fetchMovies();
+    fetchData();
   }, []);
-
-  const genres = Array.from(
-    new Set(movies.flatMap((m) => m.genre.map((g: string) => g.toLowerCase())))
-  );
 
   const featured = getRandomMovies(movies, 4);
 
@@ -74,12 +92,12 @@ export default function HomePage() {
         <div className="flex justify-center flex-wrap gap-2 mb-4">
           {genres.map((genre) => (
             <a
-              key={genre}
-              href={`/genre/${genreToSlug(genre)}`}
+              key={genre.id}
+              href={`/genre/${genre.slug}`}
               className="px-3 py-1 rounded-full text-sm"
               style={{ backgroundColor: '#374151', color: 'white' }}
             >
-              {genre}
+              {genre.name}
             </a>
           ))}
         </div>
@@ -98,12 +116,13 @@ export default function HomePage() {
       {/* Genre Rows */}
       <div className="space-y-10">
         {genres.map((genre) => {
+          // Filter movies for this genre using the old genre field for now
           const genreMovies = movies.filter((m) =>
-            m.genre.map((g: string) => g.toLowerCase()).includes(genre)
+            m.genre.map((g: string) => g.toLowerCase()).includes(genre.name.toLowerCase())
           );
           if (genreMovies.length === 0) return null;
           return (
-            <GenreRow key={genre} genre={genre} movies={genreMovies} />
+            <GenreRow key={genre.id} genre={genre.name} movies={genreMovies} />
           );
         })}
       </div>

@@ -1,12 +1,15 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { notFound } from 'next/navigation';
 import { supabase } from '../../../lib/supabaseClient';
 import { Movie } from '../../../types/Movie';
 
-function genreToSlug(genre: string) {
-  return genre.toLowerCase().replace(/[\s/]+/g, '-');
+interface Genre {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
 }
 
 function normalizeMovie(movie: unknown): Movie {
@@ -33,56 +36,68 @@ function normalizeMovie(movie: unknown): Movie {
 export function ClientGenrePage({ slug }: { slug: string }) {
   const genreSlug = decodeURIComponent(slug).toLowerCase();
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [genre, setGenre] = useState<Genre | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchMovies() {
+    async function fetchGenreAndMovies() {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('movies')
-        .select('*');
-      if (!error && data) {
-        setMovies(data.map(normalizeMovie));
+      
+      // First, get the genre by slug
+      const { data: genreData, error: genreError } = await supabase
+        .from('genres')
+        .select('*')
+        .eq('slug', genreSlug)
+        .single();
+
+      if (genreError || !genreData) {
+        setLoading(false);
+        return;
       }
+
+      setGenre(genreData);
+
+      // Then, get all movies for this genre using the junction table
+      const { data: moviesData, error: moviesError } = await supabase
+        .from('movie_genres')
+        .select(`
+          movie_id,
+          movies (*)
+        `)
+        .eq('genre_id', genreData.id);
+
+      if (!moviesError && moviesData) {
+        // Extract the movie data from the join result
+        const movieData = moviesData
+          .map(item => item.movies)
+          .filter(movie => movie !== null);
+        
+        setMovies(movieData.map(normalizeMovie));
+      }
+      
       setLoading(false);
     }
-    fetchMovies();
-  }, []);
 
-  // Find the original genre name that matches the slug
-  const originalGenre = useMemo(() => {
-    const allGenres = Array.from(
-      new Set(movies.flatMap((m) => m.genre))
-    );
-    return allGenres.find((g) => genreToSlug(g) === genreSlug) || genreSlug;
-  }, [genreSlug, movies]);
-
-  const filtered = useMemo(() => {
-    return movies.filter((movie) =>
-      movie.genre.map((g: string) => genreToSlug(g)).includes(genreSlug)
-    );
-  }, [genreSlug, movies]);
+    fetchGenreAndMovies();
+  }, [genreSlug]);
 
   if (loading) {
     return <main className="p-6 pt-12 text-center">Loading...</main>;
   }
 
-  if (filtered.length === 0) return notFound();
-
-  const capitalizedGenre =
-    originalGenre.charAt(0).toUpperCase() + originalGenre.slice(1);
+  if (!genre || movies.length === 0) return notFound();
 
   return (
     <main className="p-6 pt-12">
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold mb-2">{capitalizedGenre} AI Movies</h1>
+        <h1 className="text-4xl font-bold mb-2">{genre.name} AI Movies</h1>
         <p className="text-gray-600 text-base max-w-xl mx-auto mb-6">
-          Watch the best short films in the <strong>{capitalizedGenre}</strong> genre — all created with AI.
+          Watch the best short films in the <strong>{genre.name}</strong> genre — all created with AI.
         </p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {filtered.map((movie) => (
+        {movies.map((movie) => (
           <a
             key={movie.id}
             href={`/movie/${movie.slug}`}
@@ -105,7 +120,7 @@ export function ClientGenrePage({ slug }: { slug: string }) {
               </div>
               <div className="absolute bottom-2 right-2 z-10">
                 <span className="bg-white/90 text-black text-xs font-semibold px-2 py-0.5 rounded-full shadow">
-                  {capitalizedGenre}
+                  {genre.name}
                 </span>
               </div>
             </div>
