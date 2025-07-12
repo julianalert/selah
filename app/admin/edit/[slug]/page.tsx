@@ -36,8 +36,6 @@ interface MovieData {
 export default function EditMoviePage({ params }: { params: { slug: string } }) {
   const router = useRouter();
   const [movie, setMovie] = useState<MovieData | null>(null);
-  const [creator, setCreator] = useState<Creator | null>(null);
-  const [movieGenres, setMovieGenres] = useState<Genre[]>([]);
   const [existingCreators, setExistingCreators] = useState<Creator[]>([]);
   const [existingGenres, setExistingGenres] = useState<Genre[]>([]);
   const [loading, setLoading] = useState(true);
@@ -101,7 +99,6 @@ export default function EditMoviePage({ params }: { params: { slug: string } }) 
         
         if (creator) {
           creatorData = creator;
-          setCreator(creator);
         }
       }
 
@@ -123,7 +120,6 @@ export default function EditMoviePage({ params }: { params: { slug: string } }) 
           .map(item => (item.genres as unknown as Genre))
           .filter(Boolean);
         movieGenresData = genres;
-        setMovieGenres(genres);
       }
 
       // Populate form data
