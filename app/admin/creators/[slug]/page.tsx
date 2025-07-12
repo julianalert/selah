@@ -16,7 +16,7 @@ interface CreatorData {
   website?: string;
 }
 
-export default function EditCreatorPage({ params }: { params: { slug: string } }) {
+export default function EditCreatorPage({ params }: { params: Promise<{ slug: string }> }) {
   const router = useRouter();
   const [creator, setCreator] = useState<CreatorData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,11 +38,13 @@ export default function EditCreatorPage({ params }: { params: { slug: string } }
     async function loadData() {
       setLoading(true);
 
+      const resolvedParams = await params;
+
       // Load creator data
       const { data: creatorData, error: creatorError } = await supabase
         .from('creators')
         .select('*')
-        .eq('slug', params.slug)
+        .eq('slug', resolvedParams.slug)
         .single();
 
       if (creatorError || !creatorData) {
@@ -67,7 +69,7 @@ export default function EditCreatorPage({ params }: { params: { slug: string } }
     }
 
     loadData();
-  }, [params.slug]);
+  }, [params]);
 
   function generateSlug(text: string): string {
     return text

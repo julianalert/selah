@@ -33,7 +33,7 @@ interface MovieData {
   creator_id: number | null;
 }
 
-export default function EditMoviePage({ params }: { params: { slug: string } }) {
+export default function EditMoviePage({ params }: { params: Promise<{ slug: string }> }) {
   const router = useRouter();
   const [movie, setMovie] = useState<MovieData | null>(null);
   const [existingCreators, setExistingCreators] = useState<Creator[]>([]);
@@ -65,6 +65,8 @@ export default function EditMoviePage({ params }: { params: { slug: string } }) 
     async function loadData() {
       setLoading(true);
       
+      const resolvedParams = await params;
+      
       // Load existing creators and genres
       const [creatorsResponse, genresResponse] = await Promise.all([
         supabase.from('creators').select('*').order('name'),
@@ -78,7 +80,7 @@ export default function EditMoviePage({ params }: { params: { slug: string } }) 
       const { data: movieData, error: movieError } = await supabase
         .from('movies')
         .select('*')
-        .eq('slug', params.slug)
+        .eq('slug', resolvedParams.slug)
         .single();
 
       if (movieError || !movieData) {
@@ -145,7 +147,7 @@ export default function EditMoviePage({ params }: { params: { slug: string } }) 
     }
 
     loadData();
-  }, [params.slug]);
+  }, [params]);
 
   function generateSlug(text: string): string {
     return text
