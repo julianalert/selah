@@ -51,6 +51,7 @@ export function ClientGenrePage({ slug }: { slug: string }) {
         .single();
 
       if (genreError || !genreData) {
+        console.error('Genre not found:', genreSlug, genreError);
         setLoading(false);
         return;
       }
@@ -72,7 +73,10 @@ export function ClientGenrePage({ slug }: { slug: string }) {
           .map(item => item.movies)
           .filter(movie => movie !== null);
         
+        console.log(`Found ${movieData.length} movies for genre ${genreData.name}`);
         setMovies(movieData.map(normalizeMovie));
+      } else {
+        console.error('Error fetching movies:', moviesError);
       }
       
       setLoading(false);
@@ -85,7 +89,20 @@ export function ClientGenrePage({ slug }: { slug: string }) {
     return <main className="p-6 pt-12 text-center">Loading...</main>;
   }
 
-  if (!genre || movies.length === 0) return notFound();
+  if (!genre) return notFound();
+  
+  if (movies.length === 0) {
+    return (
+      <main className="p-6 pt-12">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold mb-2">{genre.name} AI Movies</h1>
+          <p className="text-gray-600 text-base max-w-xl mx-auto mb-6">
+            No movies found in the <strong>{genre.name}</strong> genre yet.
+          </p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="p-6 pt-12">

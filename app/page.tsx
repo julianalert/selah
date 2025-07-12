@@ -43,6 +43,7 @@ function normalizeMovie(movie: unknown): Movie {
 export default function HomePage() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [genres, setGenres] = useState<Genre[]>([]);
+  const [genreMovies, setGenreMovies] = useState<Record<number, Movie[]>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -66,6 +67,29 @@ export default function HomePage() {
       
       if (!genresError && genresData) {
         setGenres(genresData);
+        
+        // Fetch movies for each genre using the junction table
+        const genreMoviesMap: Record<number, Movie[]> = {};
+        
+        for (const genre of genresData) {
+          const { data: genreMoviesData } = await supabase
+            .from('movie_genres')
+            .select(`
+              movies (*)
+            `)
+            .eq('genre_id', genre.id);
+          
+          if (genreMoviesData) {
+            const moviesForGenre = genreMoviesData
+              .map(item => item.movies)
+              .filter(movie => movie !== null)
+              .map(normalizeMovie);
+            
+            genreMoviesMap[genre.id] = moviesForGenre;
+          }
+        }
+        
+        setGenreMovies(genreMoviesMap);
       }
       
       setLoading(false);
@@ -114,13 +138,10 @@ export default function HomePage() {
       {/* Genre Rows */}
       <div className="space-y-10">
         {genres.map((genre) => {
-          // Filter movies for this genre using the old genre field for now
-          const genreMovies = movies.filter((m) =>
-            m.genre.map((g: string) => g.toLowerCase()).includes(genre.name.toLowerCase())
-          );
-          if (genreMovies.length === 0) return null;
+          const moviesForGenre = genreMovies[genre.id] || [];
+          if (moviesForGenre.length === 0) return null;
           return (
-            <GenreRow key={genre.id} genre={genre} movies={genreMovies} />
+            <GenreRow key={genre.id} genre={genre} movies={moviesForGenre} />
           );
         })}
       </div>
