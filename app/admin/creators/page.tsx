@@ -14,6 +14,7 @@ interface Creator {
   twitter?: string;
   instagram?: string;
   website?: string;
+  youtube?: string;
 }
 
 export default function EditCreatorsPage() {
@@ -99,6 +100,11 @@ export default function EditCreatorsPage() {
                 {creator.website && (
                   <span className="text-xs bg-green-500 text-white px-2 py-1 rounded">
                     Website
+                  </span>
+                )}
+                {creator.youtube && (
+                  <span className="text-xs bg-red-500 text-white px-2 py-1 rounded">
+                    YouTube
                   </span>
                 )}
               </div>

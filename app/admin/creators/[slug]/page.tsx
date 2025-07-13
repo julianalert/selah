@@ -30,7 +30,8 @@ export default function EditCreatorPage({ params }: { params: Promise<{ slug: st
     avatar: '',
     twitter: '',
     instagram: '',
-    website: ''
+    website: '',
+    youtube: ''
   });
 
   // Load creator data
@@ -62,7 +63,8 @@ export default function EditCreatorPage({ params }: { params: Promise<{ slug: st
         avatar: creatorData.avatar || '',
         twitter: creatorData.twitter || '',
         instagram: creatorData.instagram || '',
-        website: creatorData.website || ''
+        website: creatorData.website || '',
+        youtube: creatorData.youtube || ''
       });
 
       setLoading(false);
@@ -95,7 +97,8 @@ export default function EditCreatorPage({ params }: { params: Promise<{ slug: st
         avatar: formData.avatar || null,
         twitter: formData.twitter || null,
         instagram: formData.instagram || null,
-        website: formData.website || null
+        website: formData.website || null,
+        youtube: formData.youtube || null
       };
       
       const { error: creatorError } = await supabase
@@ -207,7 +210,7 @@ export default function EditCreatorPage({ params }: { params: Promise<{ slug: st
         <div className="p-6 rounded-lg border border-gray-700">
           <h2 className="text-xl font-semibold mb-4">Social Links</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-2">Twitter</label>
               <input
@@ -229,7 +232,9 @@ export default function EditCreatorPage({ params }: { params: Promise<{ slug: st
                 placeholder="@username"
               />
             </div>
-            
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <div>
               <label className="block text-sm font-medium mb-2">Website</label>
               <input
@@ -238,6 +243,17 @@ export default function EditCreatorPage({ params }: { params: Promise<{ slug: st
                 onChange={(e) => setFormData({...formData, website: e.target.value})}
                 className="w-full p-2 border rounded"
                 placeholder="https://..."
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-2">YouTube</label>
+              <input
+                type="url"
+                value={formData.youtube}
+                onChange={(e) => setFormData({...formData, youtube: e.target.value})}
+                className="w-full p-2 border rounded"
+                placeholder="https://youtube.com/@username"
               />
             </div>
           </div>

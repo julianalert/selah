@@ -30,6 +30,7 @@ export default function AdminPage() {
     creatorTwitter: '',
     creatorInstagram: '',
     creatorWebsite: '',
+    creatorYoutube: '',
     genres: [] as string[],
     newGenres: [] as string[],
     selectedCreatorId: null as number | null
@@ -135,7 +136,8 @@ export default function AdminPage() {
               avatar: formData.creatorAvatar || null,
               twitter: formData.creatorTwitter || null,
               instagram: formData.creatorInstagram || null,
-              website: formData.creatorWebsite || null
+              website: formData.creatorWebsite || null,
+              youtube: formData.creatorYoutube || null
             })
             .select('id')
             .single();
@@ -234,6 +236,7 @@ export default function AdminPage() {
         creatorTwitter: '',
         creatorInstagram: '',
         creatorWebsite: '',
+        creatorYoutube: '',
         genres: [],
         newGenres: [],
         selectedCreatorId: null
@@ -470,6 +473,17 @@ export default function AdminPage() {
               onChange={(e) => setFormData({...formData, creatorWebsite: e.target.value})}
               className="w-full p-2 border rounded"
               placeholder="https://..."
+            />
+          </div>
+
+          <div className="mt-4">
+            <label className="block text-sm font-medium mb-2">YouTube</label>
+            <input
+              type="url"
+              value={formData.creatorYoutube}
+              onChange={(e) => setFormData({...formData, creatorYoutube: e.target.value})}
+              className="w-full p-2 border rounded"
+              placeholder="https://youtube.com/@username"
             />
           </div>
         </div>
