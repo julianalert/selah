@@ -22,7 +22,7 @@ interface Episode {
   series_id: number;
 }
 
-export default function EditEpisodePage({ params }: { params: { slug: string; episodeSlug: string } }) {
+export default function EditEpisodePage({ params }: { params: Promise<{ slug: string; episodeSlug: string }> }) {
   const router = useRouter();
   const [series, setSeries] = useState<Series | null>(null);
   const [episode, setEpisode] = useState<Episode | null>(null);
@@ -42,18 +42,19 @@ export default function EditEpisodePage({ params }: { params: { slug: string; ep
   useEffect(() => {
     async function loadData() {
       setLoading(true);
+      const resolvedParams = await params;
       // Load series
       const { data: seriesData } = await supabase
         .from('series')
         .select('id, title, slug')
-        .eq('slug', params.slug)
+        .eq('slug', resolvedParams.slug)
         .single();
       if (seriesData) setSeries(seriesData);
       // Load episode
       const { data: episodeData, error: episodeError } = await supabase
         .from('episodes')
         .select('*')
-        .eq('slug', params.episodeSlug)
+        .eq('slug', resolvedParams.episodeSlug)
         .eq('series_id', seriesData?.id)
         .single();
       if (episodeError || !episodeData) {
@@ -74,7 +75,7 @@ export default function EditEpisodePage({ params }: { params: { slug: string; ep
       setLoading(false);
     }
     loadData();
-  }, [params.slug, params.episodeSlug]);
+  }, [params]);
 
   function generateSlug(text: string): string {
     return text
