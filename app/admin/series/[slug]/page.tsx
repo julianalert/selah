@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { supabase } from '../../../../lib/supabaseClient';
+import { supabase } from 'lib/supabaseClient';
 
 interface Creator {
   id: number;
@@ -29,7 +29,7 @@ interface Episode {
   thumbnail?: string;
 }
 
-export default function EditSeriesPage({ params }: { params: { slug: string } }) {
+export default function EditSeriesPage({ params }: { params: Promise<{ slug: string }> }) {
   const [series, setSeries] = useState<Series | null>(null);
   const [formData, setFormData] = useState({
     title: '',
@@ -48,6 +48,7 @@ export default function EditSeriesPage({ params }: { params: { slug: string } })
   useEffect(() => {
     async function loadData() {
       setLoading(true);
+      const resolvedParams = await params;
       // Load creators
       const { data: creators } = await supabase
         .from('creators')
@@ -58,7 +59,7 @@ export default function EditSeriesPage({ params }: { params: { slug: string } })
       const { data: seriesData, error: seriesError } = await supabase
         .from('series')
         .select('*')
-        .eq('slug', params.slug)
+        .eq('slug', resolvedParams.slug)
         .single();
       if (seriesError || !seriesData) {
         setLoading(false);
@@ -83,7 +84,7 @@ export default function EditSeriesPage({ params }: { params: { slug: string } })
       setLoading(false);
     }
     loadData();
-  }, [params.slug]);
+  }, [params]);
 
   function generateSlug(text: string): string {
     return text
