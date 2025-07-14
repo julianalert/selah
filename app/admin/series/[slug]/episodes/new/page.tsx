@@ -10,7 +10,7 @@ interface Series {
   slug: string;
 }
 
-export default function NewEpisodePage({ params }: { params: { slug: string } }) {
+export default function NewEpisodePage({ params }: { params: Promise<{ slug: string }> }) {
   const router = useRouter();
   const [series, setSeries] = useState<Series | null>(null);
   const [formData, setFormData] = useState({
@@ -27,16 +27,17 @@ export default function NewEpisodePage({ params }: { params: { slug: string } })
 
   useEffect(() => {
     async function loadSeries() {
+      const resolvedParams = await params;
       const { data, error } = await supabase
         .from('series')
         .select('id, title, slug')
-        .eq('slug', params.slug)
+        .eq('slug', resolvedParams.slug)
         .single();
       if (data) setSeries(data);
       if (error) setMessage('Series not found.');
     }
     loadSeries();
-  }, [params.slug]);
+  }, [params]);
 
   function generateSlug(text: string): string {
     return text
