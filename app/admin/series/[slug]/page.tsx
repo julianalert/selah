@@ -31,7 +31,6 @@ interface Episode {
 }
 
 export default function EditSeriesPage({ params }: { params: { slug: string } }) {
-  const router = useRouter();
   const [series, setSeries] = useState<Series | null>(null);
   const [formData, setFormData] = useState({
     title: '',
