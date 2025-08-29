@@ -2,10 +2,10 @@ import { MetadataRoute } from 'next'
 import { supabase } from '../lib/supabaseClient'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Base URL from environment variable or fallback to localhost for development
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL 
-    ? `https://${process.env.VERCEL_URL}` 
-    : 'http://localhost:3000'
+  // Use production domain, fallback to environment variable or localhost for development
+  const baseUrl = process.env.NODE_ENV === 'production' 
+    ? 'https://www.candideai.com'
+    : process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
   
   // Static routes
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -44,11 +44,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .from('series')
       .select('slug')
 
-    // Handle any errors
-    if (moviesError) console.error('Error fetching movies for sitemap:', moviesError)
-    if (creatorsError) console.error('Error fetching creators for sitemap:', creatorsError)
-    if (genresError) console.error('Error fetching genres for sitemap:', genresError)
-    if (seriesError) console.error('Error fetching series for sitemap:', seriesError)
+    // Handle any errors silently in production, log in development
+    if (process.env.NODE_ENV === 'development') {
+      if (moviesError) console.error('Error fetching movies for sitemap:', moviesError)
+      if (creatorsError) console.error('Error fetching creators for sitemap:', creatorsError)
+      if (genresError) console.error('Error fetching genres for sitemap:', genresError)
+      if (seriesError) console.error('Error fetching series for sitemap:', seriesError)
+    }
 
     // Movie routes
     const movieRoutes: MetadataRoute.Sitemap = (movies || []).map((movie) => ({
